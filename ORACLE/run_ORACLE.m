@@ -3,18 +3,20 @@ function [T1, T2, theta, M0] = run_ORACLE(signal, TR, alpha, bPlot, varargin)
 p = inputParser;
 p.addParameter('input', 'phasecycles', @(x) ischar(x));
 p.addParameter('phi'  , []           , @(x) isnumeric(x) || isempty(x));
+p.addParameter('dim'  , length(size(signal)), @(x) isnumeric(x)); % dim is assumed to be the last non-zero dimension
 p.parse(varargin{:});
 p = p.Results;
 input = p.input;
 phi   = p.phi;
+dim   = p.dim;
 
 if isempty(phi)
     NPhaseCycle = size(signal,4);
-    phi_tmp     = linspace(0,2*pi,NPhaseCycle+1);
-    phi         = phi_tmp(1:NPhaseCycle);
+    phi         = linspace(0,2*pi,NPhaseCycle+1);
+    phi(end)    = [];
 end
 
-[T1, T2, theta, M0] = ORACLE_3D(signal, TR, alpha, input, phi);
+[T1, T2, theta, M0] = ORACLE(signal, TR, alpha, input, phi, dim);
 
 % Remove NaN values
 T1(isnan(T1)) = 0;

@@ -28,13 +28,26 @@
 %   while c0=Ab, cm1=Bb*conj(zb) and c1 = Ab*zb
 %   This takes more time but corrects for eventual aliasing if low nPC are used 
 
-function [T1, T2, theta, M0] = ORACLE_3D(signal, TR, alpha, input, phi)
+function [T1, T2, theta, M0] = ORACLE(signal, TR, alpha, input, phi, dim)
 
-    if strcmpi(input,'modes')
+    if ~exist('dim','var') || isempty(dim)
+        dim = length(size(signal)); % dim is assumed to be the last non-zero dimension
+    end
 
-        cm1 = signal(:,:,:,1);
-        c0  = signal(:,:,:,2);
-        c1  = signal(:,:,:,3);
+    if strcmpi(input,'modes') || strcmpi(input,'mode')
+
+        % Indexing array for selecting mode dimension
+        % Get size of input data
+        idx = repmat({':'}, 1, length(size(signal))); % makes a cell array of ':'
+
+        idx{dim} = 1;
+        cm1 = signal(idx{:});
+        
+        idx{dim} = 2;
+        c0  = signal(idx{:});
+
+        idx{dim} = 3;
+        c1  = signal(idx{:});
 
     else
 
@@ -43,8 +56,8 @@ function [T1, T2, theta, M0] = ORACLE_3D(signal, TR, alpha, input, phi)
         %    just pass another "phi" array to this function)
         if isempty(phi)
             NPhaseCycle = size(signal, 4);
-            phi_tmp     = linspace(0,2*pi,NPhaseCycle+1); 
-            phi         = phi_tmp(1:NPhaseCycle);      
+            phi         = linspace(0,2*pi,NPhaseCycle+1); 
+            phi(end)    = [];
         end
 
         % ii) VZ depends on the handedness of the coordinate system (Right handed coordinate system has VZ=1 and lefthanded VZ=-1)
@@ -54,9 +67,9 @@ function [T1, T2, theta, M0] = ORACLE_3D(signal, TR, alpha, input, phi)
         %      Hint: if aliasing correction is desired one can also just pass
         %      the bSSFP modes from the fixed point iteration into this
         %      function if nPC is low
-        cm1 = conj(NPointFT(signal, -1.*VZ, phi, true));
-        c0  =      NPointFT(signal,  0.*VZ, phi, true);
-        c1  =      NPointFT(signal,  1.*VZ, phi, true);
+        cm1 = conj(NPointFT(signal, dim, phi, -1.*VZ, true));
+        c0  =      NPointFT(signal, dim, phi,  0.*VZ, true);
+        c1  =      NPointFT(signal, dim, phi,  1.*VZ, true);
 
     end
 
