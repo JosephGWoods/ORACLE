@@ -46,7 +46,7 @@ function [T1, T2, theta, M0] = ORACLE(data, dim, TR, FA, varargin)
 
 % Parse inputs
 p = inputParser;
-p.addParameter('input'       , 'phase-cycles', @(x) ischar(x) || isstring(x));
+p.addParameter('input'       , 'phase-cycles', @(x) strcmp(x, 'phase-cycles') || strcmp(x, 'modes'));
 p.addParameter('phi'         , []            , @(x) isnumeric(x) || isempty(x));
 p.addParameter('mode'        , [-1, 0, 1]    , @isvector);
 p.addParameter('regularize_r', true          , @islogical);
@@ -62,10 +62,10 @@ if isempty(phi)
 end
 
 % Check input dimensions and values
-if strcmpi(input, 'phase-cycles') && size(data, dim) ~= length(phi)
+if strcmp(input, 'phase-cycles') && size(data, dim) ~= length(phi)
     error('Length of phi must match the size of data along the specified dimension dim.');
 end
-if strcmpi(input, 'modes') && size(data, dim) ~= length(mode)
+if strcmp(input, 'modes') && size(data, dim) ~= length(mode)
     error('Length of mode must match the size of data along the specified dimension dim.');
 end
 if sort(mode) ~= [-1, 0, 1]

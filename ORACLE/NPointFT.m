@@ -8,10 +8,13 @@ function data_mode = NPointFT(data, dim, varargin)
 %      dim   - dimension along which to perform the DFT (i.e. the phase cycle dimension)
 %      varargin - optional parameters as name-value pairs:
 %           'phi':      phase cycle increments in radians
-%                       (default: phi = linspace(0, 2*pi, size(data, dim) + 1); phi(end) = [])
-%           'mode':     mode index (default = [-1, 0, 1])
-%           'use_norm': normalize by 1/N (for N phase cycles) (default = true)
-%           'use_sum':  sum across phase cycle increments during the Fourier transform (default = true)
+%                       default: phi = linspace(0, 2*pi, size(data, dim) + 1); phi(end) = [];
+%           'mode':     mode index
+%                       default = [-1, 0, 1]
+%           'use_norm': normalize by 1/N (for N phase cycles)
+%                       default = true
+%           'use_sum':  sum across phase cycle increments during the Fourier transform
+%                       default = true
 %                       If false, does not sum across phase cycle increments, and instead outputs the
 %                       Fourier coefficients for each phase cycle increment along a new mode dimension
 %                       at the end of the output array.
@@ -40,7 +43,6 @@ if isempty(phi)
     phi = linspace(0, 2*pi, size(data, dim) + 1);
     phi(end) = [];
 end
-
 
 % Get size of input data
 size_data = size(data);
